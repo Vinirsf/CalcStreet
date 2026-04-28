@@ -47,6 +47,22 @@
 
     .nav-left { display: flex; align-items: center; gap: 1.5rem; }
 
+    .nav-author {
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      text-decoration: none;
+      border-left: 1px solid var(--border);
+      padding-left: 0.75rem;
+      line-height: 1.3;
+      transition: color 0.2s;
+      white-space: nowrap;
+    }
+    .nav-author span { display: block; color: var(--text); font-weight: 600; }
+    .nav-author:hover { color: var(--yellow); }
+    .nav-author:hover span { color: var(--yellow); }
+
     .nav-back {
       display: inline-flex;
       align-items: center;
@@ -386,6 +402,9 @@
         Voltar
       </a>
       <div class="nav-logo">STREET</div>
+      <a href="https://www.instagram.com/vini.rsf" target="_blank" rel="noopener" class="nav-author">
+        Developed by<span>@vini.rsf</span>
+      </a>
     </div>
     <span class="nav-title">Calculadora de Serviços</span>
   </nav>
