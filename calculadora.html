@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora — STREET</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --yellow: #E8FF00;
+      --yellow-dim: #b8cc00;
+      --black: #0a0a0a;
+      --dark: #111111;
+      --card: #161616;
+      --border: #222222;
+      --text: #f0f0f0;
+      --muted: #888888;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+      padding-bottom: 110px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 64px;
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-left { display: flex; align-items: center; gap: 1.5rem; }
+
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--text); }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 4px;
+      color: var(--yellow);
+    }
+
+    .nav-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 5.5rem 1.5rem 2rem;
+    }
+
+    .page-eyebrow {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 0.4rem;
+    }
+
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      letter-spacing: 3px;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── LEGEND ── */
+    .legend {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .dot-fatura { background: var(--yellow); }
+    .dot-mao { background: #fff; }
+
+    /* ── CATEGORY ── */
+    .cat-label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.75rem 1.2rem;
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.9rem;
+      letter-spacing: 3px;
+      color: var(--muted);
+      margin-top: 2rem;
+    }
+    .cat-label:first-of-type { margin-top: 0; }
+
+    /* ── SERVICE ROW ── */
+    .service-list {
+      border: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+
+    .service-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.2rem;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+      cursor: pointer;
+      position: relative;
+    }
+    .service-row:last-child { border-bottom: none; }
+    .service-row:hover { background: #1c1c1c; }
+
+    .service-row.fatura { border-left: 3px solid var(--yellow); }
+    .service-row.mao    { border-left: 3px solid rgba(255,255,255,0.3); }
+
+    .service-row.active.fatura { background: rgba(232,255,0,0.06); }
+    .service-row.active.mao    { background: rgba(255,255,255,0.04); }
+
+    .row-info { display: flex; flex-direction: column; gap: 0.15rem; pointer-events: none; }
+
+    .row-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .row-meta {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .row-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .price-fatura { color: var(--yellow); }
+    .price-mao    { color: #fff; }
+
+    /* ── QTY CONTROL ── */
+    .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .service-row.active .qty-control {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .qty-btn {
+      width: 28px; height: 28px;
+      background: var(--border);
+      border: none;
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .qty-btn:hover { background: #333; }
+    .qty-btn.minus { border-radius: 2px 0 0 2px; }
+    .qty-btn.plus  { border-radius: 0 2px 2px 0; }
+
+    .qty-value {
+      width: 36px; height: 28px;
+      background: #1f1f1f;
+      border: none;
+      color: var(--text);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      text-align: center;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .qty-value::-webkit-outer-spin-button,
+    .qty-value::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    /* ── CHECKBOX ── */
+    .row-check {
+      position: absolute;
+      right: 1.2rem; top: 50%;
+      transform: translateY(-50%);
+      width: 18px; height: 18px;
+      border-radius: 3px;
+      border: 2px solid var(--border);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transition: background 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+    .service-row.fatura .row-check { border-color: rgba(232,255,0,0.3); }
+    .service-row.active .row-check {
+      background: var(--yellow);
+      border-color: var(--yellow);
+    }
+    .service-row.active.mao .row-check {
+      background: #fff;
+      border-color: #fff;
+    }
+    .row-check svg { display: none; }
+    .service-row.active .row-check svg { display: block; }
+
+    /* ── FIXED FOOTER ── */
+    .calc-footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 200;
+      background: var(--dark);
+      border-top: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .footer-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .footer-items-count {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .footer-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .footer-total {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      letter-spacing: 3px;
+      color: var(--yellow);
+      line-height: 1;
+      transition: color 0.2s;
+    }
+
+    .footer-total.zero { color: var(--muted); }
+
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-reset {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-reset:hover { border-color: #555; color: var(--text); }
+
+    .footer-breakdown {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.1rem;
+    }
+
+    .breakdown-item {
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .breakdown-item span {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ── NOTA OPCIONAL ── */
+    .nota {
+      font-size: 0.7rem;
+      color: #555;
+      font-style: italic;
+      margin-left: 0.3rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      nav { padding: 0 1rem; }
+      main { padding: 5rem 1rem 2rem; }
+      .calc-footer { padding: 0 1rem; height: auto; min-height: 88px; flex-wrap: wrap; padding-top: 0.8rem; padding-bottom: 0.8rem; }
+      .footer-breakdown { display: none; }
+      .service-row { grid-template-columns: 1fr auto; }
+      .row-check { position: static; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-left">
+      <a href="index.html" class="nav-back">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+        Voltar
+      </a>
+      <div class="nav-logo">STREET</div>
+    </div>
+    <span class="nav-title">Calculadora de Serviços</span>
+  </nav>
+
+  <main>
+    <p class="page-eyebrow">Orçamento Rápido</p>
+    <h1 class="page-title">Calculadora<br/>de Serviços</h1>
+    <p class="page-desc">Selecione os serviços e ajuste a quantidade. O total é atualizado em tempo real.</p>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot dot-fatura"></div><span>Via Fatura</span></div>
+      <div class="legend-item"><div class="legend-dot dot-mao"></div><span>Dinheiro na Mão / PIX</span></div>
+    </div>
+
+    <!-- CATEGORIA: FATURA PRINCIPAL -->
+    <div class="cat-label">
+      <span>📋</span> Peças &amp; Reparos — Fatura
+    </div>
+    <div class="service-list">
+      <div class="service-row fatura" data-price="1500" data-type="fatura" data-name="Peças de Estética">
+        <div class="row-info">
+          <div class="row-name">🔧 Peças de Estética</div>
+          <div class="row-meta">Instalação / customização de peças estéticas</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-fatura">R$ 1.500</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+
+      <div class="service-row fatura" data-price="2500" data-type="fatura" data-name="Reparos Avançados">
+        <div class="row-info">
+          <div class="row-name">🧰 Reparos Avançados</div>
+          <div class="row-meta">Reparos complexos de maior exigência técnica</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-fatura">R$ 2.500</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+
+      <div class="service-row fatura" data-price="1000" data-type="fatura" data-name="Kit Limpeza">
+        <div class="row-info">
+          <div class="row-name">🚿 Kit Limpeza <span class="nota">(opcional do mecânico)</span></div>
+          <div class="row-meta">Higienização e limpeza completa do veículo</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-fatura">R$ 1.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+
+      <div class="service-row fatura" data-price="15000" data-type="fatura" data-name="Suspensão AR — Instalação">
+        <div class="row-info">
+          <div class="row-name">🔩 Suspensão AR — Instalação</div>
+          <div class="row-meta">Inclui 1 controle no valor</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-fatura">R$ 15.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+
+      <div class="service-row fatura" data-price="2000" data-type="fatura" data-name="Controle de Suspensão Extra">
+        <div class="row-info">
+          <div class="row-name">🎚️ Controle de Suspensão Extra</div>
+          <div class="row-meta">Unidade avulsa para quem já tem AR instalada</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-fatura">R$ 2.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+
+      <div class="service-row fatura" data-price="4000" data-type="fatura" data-name="Kit Freios — Instalação">
+        <div class="row-info">
+          <div class="row-name">🔩 Kit Freios — Instalação</div>
+          <div class="row-meta">Kit de freios de alta performance</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-fatura">R$ 4.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+
+      <div class="service-row fatura" data-price="4000" data-type="fatura" data-name="Kit Relação Pro — Instalação">
+        <div class="row-info">
+          <div class="row-name">⚙️ Kit Relação Pro — Instalação</div>
+          <div class="row-meta">Kit de relação profissional para performance</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-fatura">R$ 4.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+
+      <div class="service-row fatura" data-price="4000" data-type="fatura" data-name="Kit Alívio de Peso — Instalação">
+        <div class="row-info">
+          <div class="row-name">🏎️ Kit Alívio de Peso — Instalação</div>
+          <div class="row-meta">Redução de peso estrutural para desempenho</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-fatura">R$ 4.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORIA: EXTERNOS NA MÃO -->
+    <div class="cat-label">
+      <span>🗺️</span> Atendimentos Externos — Na Mão
+    </div>
+    <div class="service-list">
+      <div class="service-row mao" data-price="3000" data-type="mao" data-name="Externo — até 5 km">
+        <div class="row-info">
+          <div class="row-name">🧰 Externo — até 5 km</div>
+          <div class="row-meta">Atendimento externo raio curto</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-mao">R$ 3.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+
+      <div class="service-row mao" data-price="6000" data-type="mao" data-name="Externo — até 10 km">
+        <div class="row-info">
+          <div class="row-name">🧰 Externo — até 10 km</div>
+          <div class="row-meta">Atendimento externo raio médio</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-mao">R$ 6.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+
+      <div class="service-row mao" data-price="8000" data-type="mao" data-name="Externo — Rota 69">
+        <div class="row-info">
+          <div class="row-name">🛣️ Externo — Rota 69</div>
+          <div class="row-meta">Atendimento exclusivo na Rota 69</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-mao">R$ 8.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+
+      <div class="service-row mao" data-price="2000" data-type="mao" data-name="Re-instalação Suspensão AR">
+        <div class="row-info">
+          <div class="row-name">🔩 Re-instalação Suspensão AR</div>
+          <div class="row-meta">Para quem já possui a suspensão</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-mao">R$ 2.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORIA: KITS MÃO/PIX -->
+    <div class="cat-label">
+      <span>🔩</span> Kits de Performance — Mão / PIX
+    </div>
+    <div class="service-list">
+      <div class="service-row mao" data-price="2000" data-type="mao" data-name="Kit Espaçador — Instalação">
+        <div class="row-info">
+          <div class="row-name">🔩 Kit Espaçador — Instalação</div>
+          <div class="row-meta">Espaçadores de roda para melhor posicionamento</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-mao">R$ 2.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+
+      <div class="service-row mao" data-price="2000" data-type="mao" data-name="Kit Cambagem — Instalação">
+        <div class="row-info">
+          <div class="row-name">⚙️ Kit Cambagem — Instalação</div>
+          <div class="row-meta">Ajuste de cambagem para performance e estética</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-mao">R$ 2.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+
+      <div class="service-row mao" data-price="2000" data-type="mao" data-name="Kit Esterço — Instalação">
+        <div class="row-info">
+          <div class="row-name">🏎️ Kit Esterço — Instalação</div>
+          <div class="row-meta">Melhor resposta de direção</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-mao">R$ 2.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+
+      <div class="service-row mao" data-price="2000" data-type="mao" data-name="Kit Suspensão Rosca — Instalação">
+        <div class="row-info">
+          <div class="row-name">⬇️ Kit Suspensão Rosca — Instalação</div>
+          <div class="row-meta">Regulagem de altura via suspensão de rosca</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn minus" tabindex="-1">−</button>
+          <input class="qty-value" type="number" value="1" min="1" max="99" tabindex="-1"/>
+          <button class="qty-btn plus" tabindex="-1">+</button>
+        </div>
+        <div class="row-price price-mao">R$ 2.000</div>
+        <div class="row-check">
+          <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#000" stroke-width="3.5"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FIXED FOOTER -->
+  <div class="calc-footer">
+    <div class="footer-left">
+      <span class="footer-items-count" id="itemsCount">Nenhum serviço selecionado</span>
+      <span class="footer-label">Total</span>
+      <div class="footer-total zero" id="totalDisplay">R$ 0</div>
+    </div>
+
+    <div class="footer-breakdown" id="breakdown"></div>
+
+    <div class="footer-right">
+      <button class="btn-reset" id="resetBtn">
+        <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        Limpar
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const rows = document.querySelectorAll('.service-row');
+    const totalDisplay = document.getElementById('totalDisplay');
+    const itemsCount = document.getElementById('itemsCount');
+    const breakdown = document.getElementById('breakdown');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function formatBRL(value) {
+      return 'R$ ' + value.toLocaleString('pt-BR');
+    }
+
+    function getQty(row) {
+      return parseInt(row.querySelector('.qty-value').value) || 1;
+    }
+
+    function recalc() {
+      let totalFatura = 0;
+      let totalMao = 0;
+      let count = 0;
+      const lines = [];
+
+      rows.forEach(row => {
+        if (!row.classList.contains('active')) return;
+        const price = parseInt(row.dataset.price);
+        const qty = getQty(row);
+        const subtotal = price * qty;
+        const type = row.dataset.type;
+        count++;
+        lines.push({ name: row.dataset.name, qty, subtotal, type });
+        if (type === 'fatura') totalFatura += subtotal;
+        else totalMao += subtotal;
+      });
+
+      const total = totalFatura + totalMao;
+
+      // total display
+      totalDisplay.textContent = formatBRL(total);
+      totalDisplay.classList.toggle('zero', total === 0);
+
+      // items count
+      if (count === 0) {
+        itemsCount.textContent = 'Nenhum serviço selecionado';
+      } else {
+        itemsCount.textContent = count === 1 ? '1 serviço selecionado' : `${count} serviços selecionados`;
+      }
+
+      // breakdown
+      breakdown.innerHTML = '';
+      if (totalFatura > 0) {
+        const el = document.createElement('div');
+        el.className = 'breakdown-item';
+        el.innerHTML = `Fatura <span>${formatBRL(totalFatura)}</span>`;
+        breakdown.appendChild(el);
+      }
+      if (totalMao > 0) {
+        const el = document.createElement('div');
+        el.className = 'breakdown-item';
+        el.innerHTML = `Na Mão / PIX <span>${formatBRL(totalMao)}</span>`;
+        breakdown.appendChild(el);
+      }
+    }
+
+    rows.forEach(row => {
+      const minusBtn = row.querySelector('.qty-btn.minus');
+      const plusBtn  = row.querySelector('.qty-btn.plus');
+      const qtyInput = row.querySelector('.qty-value');
+
+      // toggle active on row click (but not on qty buttons)
+      row.addEventListener('click', e => {
+        if (e.target.closest('.qty-control')) return;
+        row.classList.toggle('active');
+        if (row.classList.contains('active')) {
+          qtyInput.value = 1;
+        }
+        recalc();
+      });
+
+      minusBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        const v = parseInt(qtyInput.value) || 1;
+        if (v > 1) { qtyInput.value = v - 1; recalc(); }
+      });
+
+      plusBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        const v = parseInt(qtyInput.value) || 1;
+        qtyInput.value = v + 1;
+        recalc();
+      });
+
+      qtyInput.addEventListener('input', e => {
+        e.stopPropagation();
+        recalc();
+      });
+
+      qtyInput.addEventListener('click', e => e.stopPropagation());
+    });
+
+    resetBtn.addEventListener('click', () => {
+      rows.forEach(row => {
+        row.classList.remove('active');
+        row.querySelector('.qty-value').value = 1;
+      });
+      recalc();
+    });
+  </script>
+</body>
+</html>

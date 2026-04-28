@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STREET — Mecânica de Estética Automotiva</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --yellow: #E8FF00;
+      --yellow-dim: #b8cc00;
+      --black: #0a0a0a;
+      --dark: #111111;
+      --card: #161616;
+      --border: #222222;
+      --text: #f0f0f0;
+      --muted: #888888;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 64px;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 4px;
+      color: var(--yellow);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--yellow); }
+
+    .nav-calc-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 1rem;
+      background: var(--yellow);
+      color: #000;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: background 0.2s, opacity 0.2s;
+      white-space: nowrap;
+    }
+
+    .nav-calc-btn:hover { background: var(--yellow-dim); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,255,0,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .hero-logo {
+      max-width: 480px;
+      width: 90%;
+      margin-bottom: 2rem;
+      filter: drop-shadow(0 0 40px rgba(232,255,0,0.25));
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 440px;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-sub strong {
+      color: var(--text);
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 1rem;
+      border-radius: 2px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .badge-fatura {
+      background: rgba(232,255,0,0.12);
+      border: 1px solid rgba(232,255,0,0.35);
+      color: var(--yellow);
+    }
+
+    .badge-mao {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text);
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--muted);
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      animation: bounce 2s infinite;
+    }
+
+    .scroll-indicator svg { opacity: 0.5; }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 5rem 2rem; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--yellow);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      letter-spacing: 3px;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      max-width: 520px;
+      margin-bottom: 3rem;
+    }
+
+    /* ── LEGEND ── */
+    .legend {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-fatura { background: var(--yellow); }
+    .dot-mao { background: #fff; }
+
+    /* ── SERVICE GRID ── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .service-card {
+      background: var(--card);
+      padding: 1.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .service-card:hover { background: #1a1a1a; }
+
+    .service-card.fatura::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--yellow);
+    }
+
+    .service-card.mao::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: rgba(255,255,255,0.4);
+    }
+
+    .service-icon {
+      font-size: 1.3rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .service-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+      letter-spacing: 0.3px;
+    }
+
+    .service-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .service-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .service-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 2px;
+    }
+
+    .price-fatura { color: var(--yellow); }
+    .price-mao { color: #ffffff; }
+
+    .service-tag {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0.3rem 0.6rem;
+      border-radius: 2px;
+    }
+
+    .tag-fatura {
+      background: rgba(232,255,0,0.12);
+      border: 1px solid rgba(232,255,0,0.3);
+      color: var(--yellow);
+    }
+
+    .tag-mao {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #ccc;
+    }
+
+    /* ── FULL-WIDTH CATEGORY HEADER ── */
+    .cat-header {
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      padding: 1rem 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .cat-header-icon { font-size: 1rem; }
+
+    .cat-header-title {
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 3px;
+      font-size: 1rem;
+      color: var(--muted);
+    }
+
+    /* ── EXTERNAL SERVICES SPECIAL LAYOUT ── */
+    .ext-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .ext-card {
+      background: var(--card);
+      padding: 1.8rem;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .ext-card:hover { background: #1a1a1a; }
+
+    .ext-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: rgba(255,255,255,0.4);
+    }
+
+    .ext-range {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .ext-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .ext-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+    }
+
+    .ext-tag {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0.3rem 0.6rem;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #ccc;
+      border-radius: 2px;
+    }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ── INFO STRIP ── */
+    .info-strip {
+      background: var(--yellow);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .info-strip span {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #000;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark);
+      border-top: 1px solid var(--border);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 6px;
+      color: var(--yellow);
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-sub {
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-copy {
+      font-size: 0.65rem;
+      color: #444;
+      letter-spacing: 1px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      nav { padding: 0 1.2rem; }
+      .nav-links { display: none; }
+      .hero { padding: 5rem 1.2rem 3rem; }
+      section { padding: 3.5rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">STREET</div>
+    <ul class="nav-links">
+      <li><a href="#fatura">Via Fatura</a></li>
+      <li><a href="#externos">Externos</a></li>
+      <li><a href="#kits">Kits</a></li>
+      <li><a href="#controles">Controles</a></li>
+    </ul>
+    <a href="calculadora.html" class="nav-calc-btn">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h4"/></svg>
+      Calculadora
+    </a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="hero-eyebrow">Mecânica de Estética Automotiva</p>
+    <img
+      src="logo.png"
+      alt="Street Car Club"
+      class="hero-logo"
+      onerror="this.style.display='none'; document.getElementById('hero-text-fallback').style.display='block';"
+    />
+    <div id="hero-text-fallback" style="display:none; font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,10vw,6rem); letter-spacing:8px; color:#fff; margin-bottom:1rem; line-height:1;">
+      STREET
+    </div>
+    <p class="hero-sub">
+      <strong>Estética. Performance. Precisão.</strong><br/>
+      Seu veículo nas mãos de quem entende de verdade.
+    </p>
+
+    <div class="hero-badges">
+      <span class="badge badge-fatura">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><rect width="10" height="10" rx="2"/></svg>
+        Pagamento via Fatura
+      </span>
+      <span class="badge badge-mao">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><rect width="10" height="10" rx="2"/></svg>
+        Dinheiro na Mão / PIX
+      </span>
+    </div>
+
+    <div class="scroll-indicator">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path d="M19 9l-7 7-7-7"/>
+      </svg>
+      Ver serviços
+    </div>
+  </section>
+
+  <div class="info-strip">
+    <span>
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+      Atendimento Presencial
+    </span>
+    <span>
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
+      Atendimento Externo Disponível
+    </span>
+    <span>
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      Serviços Especializados
+    </span>
+  </div>
+
+  <!-- SERVIÇOS VIA FATURA -->
+  <section id="fatura">
+    <div class="container">
+      <p class="section-label">Pagamento via Fatura</p>
+      <h2 class="section-title">Serviços<br/>Principais</h2>
+      <p class="section-desc">Serviços cobrados por fatura no sistema. Converse com nosso mecânico para aprovação.</p>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot dot-fatura"></div>
+          <span>Via Fatura</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot dot-mao"></div>
+          <span>Dinheiro na Mão / PIX</span>
+        </div>
+      </div>
+
+      <div class="cat-header">
+        <span class="cat-header-icon">📋</span>
+        <span class="cat-header-title">Peças &amp; Reparos — Fatura</span>
+      </div>
+      <div class="services-grid">
+
+        <div class="service-card fatura">
+          <div class="service-icon">🔧</div>
+          <div class="service-name">Peças de Estética</div>
+          <div class="service-desc">Instalação e customização de peças estéticas no veículo.</div>
+          <div class="service-footer">
+            <span class="service-price price-fatura">R$ 1.500</span>
+            <span class="service-tag tag-fatura">FATURA / UN.</span>
+          </div>
+        </div>
+
+        <div class="service-card fatura">
+          <div class="service-icon">🧰</div>
+          <div class="service-name">Reparos Avançados</div>
+          <div class="service-desc">Reparos complexos e serviços de maior exigência técnica.</div>
+          <div class="service-footer">
+            <span class="service-price price-fatura">R$ 2.500</span>
+            <span class="service-tag tag-fatura">FATURA / UN.</span>
+          </div>
+        </div>
+
+        <div class="service-card fatura">
+          <div class="service-icon">🚿</div>
+          <div class="service-name">Kit Limpeza</div>
+          <div class="service-desc">Opcional — a critério do mecânico. Higienização e limpeza completa do veículo.</div>
+          <div class="service-footer">
+            <span class="service-price price-fatura">R$ 1.000</span>
+            <span class="service-tag tag-fatura">FATURA / UN.</span>
+          </div>
+        </div>
+
+        <div class="service-card fatura">
+          <div class="service-icon">🔩</div>
+          <div class="service-name">Suspensão AR — Instalação</div>
+          <div class="service-desc">Instalação de suspensão a ar. <strong style="color:var(--yellow)">1 controle incluso</strong> no valor do serviço.</div>
+          <div class="service-footer">
+            <span class="service-price price-fatura">R$ 15.000</span>
+            <span class="service-tag tag-fatura">FATURA</span>
+          </div>
+        </div>
+
+        <div class="service-card fatura">
+          <div class="service-icon">🔩</div>
+          <div class="service-name">Kit Freios — Instalação</div>
+          <div class="service-desc">Instalação completa do kit de freios de alta performance.</div>
+          <div class="service-footer">
+            <span class="service-price price-fatura">R$ 4.000</span>
+            <span class="service-tag tag-fatura">FATURA</span>
+          </div>
+        </div>
+
+        <div class="service-card fatura">
+          <div class="service-icon">⚙️</div>
+          <div class="service-name">Kit Relação Pro — Instalação</div>
+          <div class="service-desc">Instalação do kit de relação profissional para performance máxima.</div>
+          <div class="service-footer">
+            <span class="service-price price-fatura">R$ 4.000</span>
+            <span class="service-tag tag-fatura">FATURA</span>
+          </div>
+        </div>
+
+        <div class="service-card fatura">
+          <div class="service-icon">🏎️</div>
+          <div class="service-name">Kit Alívio de Peso — Instalação</div>
+          <div class="service-desc">Redução de peso estrutural para maior desempenho em pista.</div>
+          <div class="service-footer">
+            <span class="service-price price-fatura">R$ 4.000</span>
+            <span class="service-tag tag-fatura">FATURA</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+
+  <!-- ATENDIMENTOS EXTERNOS -->
+  <section id="externos">
+    <div class="container">
+      <p class="section-label">Dinheiro na Mão</p>
+      <h2 class="section-title">Atendimentos<br/>Externos</h2>
+      <p class="section-desc">Levamos o serviço até você. Cobrança na mão, direto com o mecânico.</p>
+
+      <div class="ext-grid">
+
+        <div class="ext-card">
+          <div class="ext-range">🗺️ Até 5 km</div>
+          <div class="ext-price">R$ 3.000</div>
+          <div class="ext-label">Atendimento externo — raio curto</div>
+          <span class="ext-tag">NA MÃO</span>
+        </div>
+
+        <div class="ext-card">
+          <div class="ext-range">🗺️ Até 10 km</div>
+          <div class="ext-price">R$ 6.000</div>
+          <div class="ext-label">Atendimento externo — raio médio</div>
+          <span class="ext-tag">NA MÃO</span>
+        </div>
+
+        <div class="ext-card" style="border-left: 3px solid var(--yellow); padding-left: calc(1.8rem - 3px);">
+          <div class="ext-range" style="color:var(--yellow)">🛣️ Rota 69</div>
+          <div class="ext-price" style="color:var(--yellow)">R$ 8.000</div>
+          <div class="ext-label">Atendimento exclusivo na Rota 69</div>
+          <span class="ext-tag" style="background:rgba(232,255,0,0.1);border-color:rgba(232,255,0,0.3);color:var(--yellow)">NA MÃO — ROTA ESPECIAL</span>
+        </div>
+
+      </div>
+
+      <!-- Re-instalação Suspensão AR -->
+      <div style="margin-top:1px; background:var(--border);">
+        <div class="service-card mao" style="background:var(--card);">
+          <div class="service-icon">🔩</div>
+          <div class="service-name">Re-instalação da Suspensão AR</div>
+          <div class="service-desc">Re-instalação de suspensão a ar previamente adquirida.</div>
+          <div class="service-footer">
+            <span class="service-price price-mao">R$ 2.000</span>
+            <span class="service-tag tag-mao">NA MÃO</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+
+  <!-- KITS -->
+  <section id="kits">
+    <div class="container">
+      <p class="section-label">Mão / PIX</p>
+      <h2 class="section-title">Kits de<br/>Performance</h2>
+      <p class="section-desc">Traga o seu kit — a instalação sai por R$ 2.000. Pagamento na mão ou pix.</p>
+
+      <div class="cat-header">
+        <span class="cat-header-icon">🔩</span>
+        <span class="cat-header-title">Instalação de Kits — R$ 2.000 cada — Na Mão ou PIX</span>
+      </div>
+      <div class="services-grid">
+
+        <div class="service-card mao">
+          <div class="service-icon">🔩</div>
+          <div class="service-name">Kit Espaçador</div>
+          <div class="service-desc">Instalação de espaçadores de roda para melhor posicionamento.</div>
+          <div class="service-footer">
+            <span class="service-price price-mao">R$ 2.000</span>
+            <span class="service-tag tag-mao">MÃO / PIX</span>
+          </div>
+        </div>
+
+        <div class="service-card mao">
+          <div class="service-icon">⚙️</div>
+          <div class="service-name">Kit Cambagem</div>
+          <div class="service-desc">Ajuste de cambagem para performance e estética das rodas.</div>
+          <div class="service-footer">
+            <span class="service-price price-mao">R$ 2.000</span>
+            <span class="service-tag tag-mao">MÃO / PIX</span>
+          </div>
+        </div>
+
+        <div class="service-card mao">
+          <div class="service-icon">🏎️</div>
+          <div class="service-name">Kit Esterço</div>
+          <div class="service-desc">Instalação de kit esterço para melhor resposta de direção.</div>
+          <div class="service-footer">
+            <span class="service-price price-mao">R$ 2.000</span>
+            <span class="service-tag tag-mao">MÃO / PIX</span>
+          </div>
+        </div>
+
+        <div class="service-card mao">
+          <div class="service-icon">⬇️</div>
+          <div class="service-name">Kit Suspensão Rosca</div>
+          <div class="service-desc">Instalação de suspensão de rosca para regulagem de altura.</div>
+          <div class="service-footer">
+            <span class="service-price price-mao">R$ 2.000</span>
+            <span class="service-tag tag-mao">MÃO / PIX</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider"/>
+
+  <!-- CONTROLES -->
+  <section id="controles">
+    <div class="container">
+      <p class="section-label">Venda Avulsa</p>
+      <h2 class="section-title">Controles de<br/>Suspensão</h2>
+      <p class="section-desc">Controles extras para quem já possui suspensão AR instalada.</p>
+
+      <div style="background:var(--border); display:inline-block; width:100%;">
+        <div class="service-card fatura" style="max-width:380px; background:var(--card);">
+          <div class="service-icon">🎚️</div>
+          <div class="service-name">Controle de Suspensão Extra</div>
+          <div class="service-desc">
+            Controle adicional para sistema de suspensão a ar já instalado.<br/>
+            <span style="color:var(--yellow); font-size:0.75rem; font-weight:600;">Obs: 1 controle já incluso na instalação da Suspensão AR.</span>
+          </div>
+          <div class="service-footer">
+            <span class="service-price price-fatura">R$ 2.000</span>
+            <span class="service-tag tag-fatura">FATURA / UN.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- RESUMO TABELA -->
+  <section style="background:var(--dark); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="container">
+      <p class="section-label">Tabela Completa</p>
+      <h2 class="section-title">Todos os<br/>Valores</h2>
+
+      <div style="overflow-x:auto; margin-top:1.5rem;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+          <thead>
+            <tr style="border-bottom:2px solid var(--yellow);">
+              <th style="text-align:left; padding:0.75rem 1rem; font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted);">Serviço</th>
+              <th style="text-align:right; padding:0.75rem 1rem; font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted);">Valor</th>
+              <th style="text-align:right; padding:0.75rem 1rem; font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted);">Forma</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- fatura -->
+            <tr style="border-bottom:1px solid var(--border); background:rgba(232,255,0,0.03);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">📋 Peças de Estética</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px; color:var(--yellow);">R$ 1.500</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-fatura" style="font-size:0.55rem;">FATURA</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border); background:rgba(232,255,0,0.03);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">🧰 Reparos Avançados</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px; color:var(--yellow);">R$ 2.500</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-fatura" style="font-size:0.55rem;">FATURA</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border); background:rgba(232,255,0,0.03);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">🚿 Kit Limpeza <span style="color:var(--muted); font-weight:400; font-size:0.75rem;">(opcional)</span></td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px; color:var(--yellow);">R$ 1.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-fatura" style="font-size:0.55rem;">FATURA</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border); background:rgba(232,255,0,0.03);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">🔩 Suspensão AR — Instalação <span style="color:var(--yellow); font-size:0.75rem;">(+ 1 controle)</span></td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px; color:var(--yellow);">R$ 15.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-fatura" style="font-size:0.55rem;">FATURA</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border); background:rgba(232,255,0,0.03);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">🎚️ Controle de Suspensão Extra</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px; color:var(--yellow);">R$ 2.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-fatura" style="font-size:0.55rem;">FATURA</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border); background:rgba(232,255,0,0.03);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">🔩 Kit Freios — Instalação</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px; color:var(--yellow);">R$ 4.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-fatura" style="font-size:0.55rem;">FATURA</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border); background:rgba(232,255,0,0.03);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">⚙️ Kit Relação Pro — Instalação</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px; color:var(--yellow);">R$ 4.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-fatura" style="font-size:0.55rem;">FATURA</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border); background:rgba(232,255,0,0.03);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">🏎️ Kit Alívio de Peso — Instalação</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px; color:var(--yellow);">R$ 4.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-fatura" style="font-size:0.55rem;">FATURA</span></td>
+            </tr>
+            <!-- mao -->
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">🧰 Externo — até 5 km</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px;">R$ 3.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-mao" style="font-size:0.55rem;">NA MÃO</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">🧰 Externo — até 10 km</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px;">R$ 6.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-mao" style="font-size:0.55rem;">NA MÃO</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">🧰 Externo — Rota 69</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px;">R$ 8.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-mao" style="font-size:0.55rem;">NA MÃO</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">🔩 Re-instalação Suspensão AR</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px;">R$ 2.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-mao" style="font-size:0.55rem;">NA MÃO</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">🔩 Kit Espaçador — Instalação</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px;">R$ 2.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-mao" style="font-size:0.55rem;">MÃO / PIX</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">⚙️ Kit Cambagem — Instalação</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px;">R$ 2.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-mao" style="font-size:0.55rem;">MÃO / PIX</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:0.75rem 1rem; font-weight:600;">🏎️ Kit Esterço — Instalação</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px;">R$ 2.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-mao" style="font-size:0.55rem;">MÃO / PIX</span></td>
+            </tr>
+            <tr>
+              <td style="padding:0.75rem 1rem; font-weight:600;">⬇️ Kit Suspensão Rosca — Instalação</td>
+              <td style="padding:0.75rem 1rem; text-align:right; font-family:'Bebas Neue',sans-serif; letter-spacing:1px;">R$ 2.000</td>
+              <td style="padding:0.75rem 1rem; text-align:right;"><span class="service-tag tag-mao" style="font-size:0.55rem;">MÃO / PIX</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">STREET</div>
+    <p class="footer-sub">Mecânica de Estética Automotiva</p>
+    <p class="footer-copy">Street Car Club · GTA RP · Todos os direitos reservados</p>
+  </footer>
+
+</body>
+</html>
