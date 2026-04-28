@@ -150,7 +150,7 @@
 
     .service-row {
       display: grid;
-      grid-template-columns: 1fr auto auto;
+      grid-template-columns: 1fr auto auto auto;
       align-items: center;
       gap: 1rem;
       padding: 1rem 1.2rem;
@@ -158,7 +158,6 @@
       border-bottom: 1px solid var(--border);
       transition: background 0.15s;
       cursor: pointer;
-      position: relative;
     }
     .service-row:last-child { border-bottom: none; }
     .service-row:hover { background: #1c1c1c; }
@@ -245,9 +244,6 @@
 
     /* ── CHECKBOX ── */
     .row-check {
-      position: absolute;
-      right: 1.2rem; top: 50%;
-      transform: translateY(-50%);
       width: 18px; height: 18px;
       border-radius: 3px;
       border: 2px solid var(--border);
@@ -258,6 +254,7 @@
       pointer-events: none;
       transition: background 0.15s, border-color 0.15s;
       flex-shrink: 0;
+      justify-self: center;
     }
     .service-row.fatura .row-check { border-color: rgba(232,255,0,0.3); }
     .service-row.active .row-check {
@@ -376,8 +373,7 @@
       main { padding: 5rem 1rem 2rem; }
       .calc-footer { padding: 0 1rem; height: auto; min-height: 88px; flex-wrap: wrap; padding-top: 0.8rem; padding-bottom: 0.8rem; }
       .footer-breakdown { display: none; }
-      .service-row { grid-template-columns: 1fr auto; }
-      .row-check { position: static; transform: none; }
+      .service-row { grid-template-columns: 1fr auto auto auto; }
     }
   </style>
 </head>
